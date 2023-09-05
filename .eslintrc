@@ -12,7 +12,10 @@
         "linebreak-style": ["error", "windows"],
         "eol-last": 0,
         "no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0 }],
-        "require-jsdoc": "off"
+        "require-jsdoc": "off",
+        "quotes": "off",
+        "operator-linebreak": "off",
+        "no-unused-vars": "off"
     },
     "extends": ["eslint:recommended", "google"]
 }
