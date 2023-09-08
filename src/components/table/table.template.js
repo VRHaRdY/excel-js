@@ -3,25 +3,32 @@ const CODES = {
   Z: 90,
 };
 
-function toCell(data) {
+function toCell(content, index) {
   return `
-    <div class="cell" contenteditable>
+    <div class="cell" data-column="${index}" contenteditable>
 
     </div>
   `;
 }
 
-function toColumn(column) {
+function toColumn(column, index) {
   return `
-    <div class="column">
+    <div class="column" data-column="${index}" data-type="resizable">
       ${column}
+      <div class="column-resize" data-resize="column"></div>
     </div>
   `;
 }
 
 function createRow(index, content) {
-  return `<div class="row">
-    <div class="row-info">${index ? index : ""}</div>
+  const resizer = index
+  ? `<div class="row-resize" data-resize="row"></div>`
+  : ""
+  return `<div class="row" data-type="resizable">
+    <div class="row-info">
+      ${index ? index : ""}
+      ${resizer}
+    </div>
     <div class="row-data">${content}</div>
   </div>`;
 }
@@ -40,10 +47,8 @@ export function createTable(rowsCount = 15) {
       .map(toColumn)
       .join("");
 
-  // Первая строка (шапка таблицы)
   rows.push(createRow("", columns));
 
-  // Остальные строки
   for (let i = 0; i < rowsCount; i++) {
     const cellsData = new Array(columnsCount)
         .fill("")

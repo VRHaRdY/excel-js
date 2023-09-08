@@ -6,7 +6,7 @@ export class Formula extends ExcelComponent {
   constructor($root) {
     super($root, {
       name: 'Formula',
-      listeners: ['input', 'click']
+      listeners: ['input', 'click', 'mousedown']
     });
   }
 
@@ -23,5 +23,9 @@ export class Formula extends ExcelComponent {
 
   onClick(event) {
     console.log('Formula onClick', event.target.textContent.trim())
+  }
+
+  onMousedown(event) {
+    console.log('Formula onMD', event.target.textContent.trim())
   }
 }
