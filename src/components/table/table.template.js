@@ -1,75 +1,104 @@
+import {toInlineStyles} from "../../core/utils";
+import {defaultStyles} from "../../constants"
+import {parse} from "../../core/parse";
+
 const CODES = {
   A: 65,
   Z: 90,
 };
 
-// function toCell(column, row) {
-//   return `
-//     <div class="cell"
-//     data-row="${row}"
-//     data-column="${column}"
-//     contenteditable>
-//     </div>
-//   `;
-// }
+const DEFAULT_WIDTH = 120
+const DEFAULT_HEIGHT = 30
 
-function toCell(row) {
+function toCell(state, row) {
   return function(_, column) {
+    const id = `${row}:${column}`
+    const width = getWidth(state.columnState, column)
+    const data = state.dataState[id]
+    const styles = toInlineStyles({
+      ...defaultStyles,
+      ...state.stylesState[id]
+    })
     return `<div class="cell"
     data-row="${row}"
     data-column="${column}"
-    data-id="${row}:${column}"
+    data-id="${id}"
     data-type="cell"
-    contenteditable>
+    data-value="${data || ''}"
+    contenteditable
+    style="${styles}; width: ${width}"
+    >
+    ${parse(data) || ''}
     </div>`;
   };
 }
 
-function toColumn(column, index) {
+function toColumn({column, index, width}) {
   return `
-    <div class="column" data-column="${index}" data-type="resizable">
+    <div class="column" data-column="${index}" data-type="resizable"
+    style="width: ${width}">
       ${column}
       <div class="column-resize" data-resize="column"></div>
     </div>
   `;
 }
 
-function createRow(index, content) {
+function createRow(state, index, content) {
   const resizer = index
     ? `<div class="row-resize" data-resize="row"></div>`
     : "";
-  return `<div class="row" data-type="resizable">
+  return `
+  <div class="row"
+  data-type="resizable"
+  data-row="${index}"
+  style="height: ${getHeight(state, index)}">
     <div class="row-info">
       ${index ? index : ""}
       ${resizer}
     </div>
     <div class="row-data">${content}</div>
-  </div>`;
+  </div>
+  `;
 }
 
 function toChar(el, index) {
   return String.fromCharCode(CODES.A + index);
 }
 
-export function createTable(rowsCount = 15) {
+function getWidth(state, index) {
+  return (state[index] || DEFAULT_WIDTH) + 'px'
+}
+
+function getHeight(state, index) {
+  return (state[index] || DEFAULT_HEIGHT) + 'px'
+}
+
+function withWidthFrom(state) {
+  return function(column, index) {
+    return {
+      column, index, width: getWidth(state.columnState, index)
+    }
+  }
+}
+
+export function createTable(rowsCount = 15, state = {}) {
   const columnsCount = CODES.Z - CODES.A + 1;
   const rows = [];
 
   const columns = new Array(columnsCount)
       .fill("")
       .map(toChar)
+      .map(withWidthFrom(state))
       .map(toColumn)
       .join("");
 
-  rows.push(createRow("", columns));
-
+  rows.push(createRow({}, "", columns));
   for (let row = 0; row < rowsCount; row++) {
     const cellsData = new Array(columnsCount)
         .fill("")
-        // .map((_, column) => toCell(row, column))
-        .map(toCell(row))
+        .map(toCell(state, row))
         .join("");
-    rows.push(createRow(row + 1, cellsData));
+    rows.push(createRow(state.rowState, row + 1, cellsData));
   }
   return rows.join("");
 }

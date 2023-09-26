@@ -12,7 +12,6 @@ export class DomListener {
   initDOMListeners() {
     this.listeners.forEach((listener) => {
       const method = getMethodName(listener);
-      console.log(method);
 
       if (!this[method]) {
         throw new Error(
@@ -20,7 +19,7 @@ export class DomListener {
         );
       }
       this[method] = this[method].bind(this)
-      // Тожу самое, что и addEventListener
+      // Аналог addEventListener
       this.$root.on(listener, this[method]);
     });
   }
@@ -28,7 +27,6 @@ export class DomListener {
   removeDOMListeners() {
     this.listeners.forEach((listener) => {
       const method = getMethodName(listener);
-      console.log(method);
 
       if (!this[method]) {
         throw new Error(
