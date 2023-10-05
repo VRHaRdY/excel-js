@@ -56,7 +56,6 @@ export class Table extends ExcelComponent {
     this.selection.select($cell);
     this.$emit('table:select', $cell)
     const styles = $cell.getStyles(Object.keys(defaultStyles))
-    console.log('styles to dispatch', styles)
     this.$dispatch(actions.changeStyles(styles))
   }
 
@@ -110,7 +109,6 @@ export class Table extends ExcelComponent {
   }
 
   updateTextInStore(value) {
-    console.log('xxx', this.selection)
     this.$dispatch(actions.changeText({
       id: this.selection.current.id(),
       value
@@ -118,7 +116,6 @@ export class Table extends ExcelComponent {
   }
 
   onInput(event) {
-    // this.emitter.emit('table:input', $(event.target))
     this.updateTextInStore($(event.target).text())
   }
 }

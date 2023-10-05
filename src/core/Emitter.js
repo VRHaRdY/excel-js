@@ -22,8 +22,3 @@ export class Emitter {
     }
   }
 }
-
-const emitter = new Emitter
-
-emitter.subscribe("hello", text => console.log("sub is work"))
-emitter.emit("hello", "wow, ")
